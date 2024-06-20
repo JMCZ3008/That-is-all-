@@ -28,6 +28,7 @@
             color: white;
             margin: 0 15px;
             text-decoration: none;
+            cursor: pointer;
         }
         nav a:hover {
             text-decoration: underline;
@@ -61,6 +62,9 @@
             margin: 10px 0;
             border-radius: 5px;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -70,57 +74,87 @@
     </header>
 
     <nav>
-        <a href="#sobre-mi">Sobre Mí</a>
-        <a href="#blog">Blog</a>
-        <a href="#recetas">Recetas</a>
-        <a href="#proyectos">Proyectos</a>
-        <a href="#contacto">Contacto</a>
+        <a onclick="showSection('sobre-mi')">Sobre Mí</a>
+        <a onclick="showSection('blog')">Blog</a>
+        <a onclick="showSection('recetas')">Recetas</a>
+        <a onclick="showSection('proyectos')">Proyectos</a>
+        <a onclick="showSection('contacto')">Contacto</a>
     </nav>
 
-    <section id="sobre-mi">
+    <section id="sobre-mi" class="hidden">
         <div class="card green">
             <h2>Sobre Mí</h2>
-            <p>Aquí puedes agregar una breve biografía o descripción sobre ti mismo. Incluye información sobre tus intereses, tu carrera y cualquier otra cosa que te gustaría compartir.</p>
+            <p id="sobre-mi-content">Aquí puedes agregar una breve biografía o descripción sobre ti mismo. Incluye información sobre tus intereses, tu carrera y cualquier otra cosa que te gustaría compartir.</p>
+            <textarea id="sobre-mi-text" placeholder="Escribe tu descripción aquí..."></textarea><br>
+            <button onclick="updateContent('sobre-mi')">Actualizar</button>
         </div>
     </section>
 
-    <section id="blog">
+    <section id="blog" class="hidden">
         <div class="card blue">
             <h2>Blog</h2>
-            <p>Aquí puedes compartir tus pensamientos y experiencias. Agrega tus artículos de blog con títulos, fechas y contenido.</p>
+            <p id="blog-content">Aquí puedes compartir tus pensamientos y experiencias. Agrega tus artículos de blog con títulos, fechas y contenido.</p>
+            <textarea id="blog-text" placeholder="Escribe tu entrada de blog aquí..."></textarea><br>
+            <button onclick="updateContent('blog')">Actualizar</button>
         </div>
     </section>
 
-    <section id="recetas">
+    <section id="recetas" class="hidden">
         <div class="card green">
             <h2>Recetas</h2>
-            <p>Comparte tus platillos y recetas favoritas. Puedes agregar imágenes y descripciones de cada platillo.</p>
+            <p id="recetas-content">Comparte tus platillos y recetas favoritas. Puedes agregar imágenes y descripciones de cada platillo.</p>
+            <textarea id="recetas-text" placeholder="Escribe tu receta aquí..."></textarea><br>
+            <button onclick="updateContent('recetas')">Actualizar</button>
         </div>
     </section>
 
-    <section id="proyectos">
+    <section id="proyectos" class="hidden">
         <div class="card blue">
             <h2>Proyectos</h2>
-            <p>Describe tus proyectos y trabajos. Puedes agregar imágenes, descripciones y enlaces a tus proyectos.</p>
+            <p id="proyectos-content">Describe tus proyectos y trabajos. Puedes agregar imágenes, descripciones y enlaces a tus proyectos.</p>
+            <textarea id="proyectos-text" placeholder="Escribe la descripción de tu proyecto aquí..."></textarea><br>
+            <button onclick="updateContent('proyectos')">Actualizar</button>
         </div>
     </section>
 
-    <section id="contacto">
+    <section id="contacto" class="hidden">
         <div class="card green">
             <h2>Contacto</h2>
             <p>Conéctate conmigo a través de mis redes sociales:</p>
-            <ul>
+            <ul id="contacto-content">
                 <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
                 <li><a href="https://www.twitter.com" target="_blank">Twitter</a></li>
                 <li><a href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
                 <li><a href="https://www.instagram.com" target="_blank">Instagram</a></li>
             </ul>
+            <textarea id="contacto-text" placeholder="Añade otra red social aquí..."></textarea><br>
+            <button onclick="updateContent('contacto')">Actualizar</button>
         </div>
     </section>
 
     <footer>
         <p>&copy; 2024 Mi Página Personal. Todos los derechos reservados.</p>
     </footer>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        }
+
+        function updateContent(sectionId) {
+            const contentElement = document.getElementById(`${sectionId}-content`);
+            const textElement = document.getElementById(`${sectionId}-text`);
+            contentElement.innerHTML = textElement.value;
+            textElement.value = '';
+        }
+    </script>
 
 </body>
 </html>
