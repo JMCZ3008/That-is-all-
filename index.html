@@ -65,6 +65,32 @@
         .hidden {
             display: none;
         }
+        .recipe {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .recipe h3 {
+            margin-top: 0;
+        }
+        .recipe button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .recipe button:hover {
+            background-color: #c0392b;
+        }
+        .recipe img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -109,8 +135,14 @@
             <div id="recetas-content">
                 <p>Comparte tus platillos y recetas favoritas. Puedes agregar imágenes y descripciones de cada platillo.</p>
             </div>
-            <textarea id="recetas-text" placeholder="Escribe tu receta aquí..."></textarea><br>
-            <button onclick="addContent('recetas')">Agregar</button>
+            <form id="receta-form">
+                <input type="text" id="receta-nombre" placeholder="Nombre del platillo" required><br>
+                <input type="text" id="receta-duracion" placeholder="Duración (e.g., 30 minutos)" required><br>
+                <textarea id="receta-ingredientes" placeholder="Ingredientes" required></textarea><br>
+                <textarea id="receta-preparacion" placeholder="Preparación" required></textarea><br>
+                <input type="file" id="receta-imagen" accept="image/*" required><br>
+                <button type="button" onclick="addRecipe()">Agregar Receta</button>
+            </form>
         </div>
     </section>
 
@@ -164,7 +196,29 @@
             contentElement.appendChild(newContent);
             textElement.value = '';
         }
-    </script>
 
-</body>
-</html>
+        function addRecipe() {
+            const recetaNombre = document.getElementById('receta-nombre').value;
+            const recetaDuracion = document.getElementById('receta-duracion').value;
+            const recetaIngredientes = document.getElementById('receta-ingredientes').value;
+            const recetaPreparacion = document.getElementById('receta-preparacion').value;
+            const recetaImagen = document.getElementById('receta-imagen').files[0];
+
+            if (recetaNombre && recetaDuracion && recetaIngredientes && recetaPreparacion && recetaImagen) {
+                const recetaContent = document.getElementById('recetas-content');
+
+                const newRecipe = document.createElement('div');
+                newRecipe.classList.add('recipe');
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newRecipe.innerHTML = `
+                        <h3>${recetaNombre}</h3>
+                        <p><strong>Duración:</strong> ${recetaDuracion}</p>
+                        <p><strong>Ingredientes:</strong> ${recetaIngredientes}</p>
+                        <p><strong>Preparación:</strong> ${recetaPreparacion}</p>
+                        <img src="${e.target.result}" alt="${recetaNombre}">
+                        <button onclick="deleteRecipe(this)">Eliminar</button>
+                    `;
+
+                    recetaContent.appendChild(newRecipe);
