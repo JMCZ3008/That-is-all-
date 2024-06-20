@@ -228,4 +228,83 @@
                         <img src="${e.target.result}" alt="${recetaNombre}">
                         <button onclick="editRecipe(this)">Editar</button>
                         <button onclick="deleteRecipe(this)">Eliminar</button>
-                        <div class="
+                        <div class="recipe-edit hidden">
+                            <input type="text" class="edit-nombre" value="${recetaNombre}">
+                            <input type="text" class="edit-duracion" value="${recetaDuracion}">
+                            <textarea class="edit-ingredientes">${recetaIngredientes}</textarea>
+                            <textarea class="edit-preparacion">${recetaPreparacion}</textarea>
+                            <input type="file" class="edit-imagen" accept="image/*">
+                            <button onclick="saveRecipe(this)">Guardar</button>
+                            <button onclick="cancelEdit(this)">Cancelar</button>
+                        </div>
+                    `;
+
+                    recetaContent.appendChild(newRecipe);
+                };
+                reader.readAsDataURL(recetaImagen);
+
+                document.getElementById('receta-form').reset();
+            } else {
+                alert('Por favor, completa todos los campos.');
+            }
+        }
+
+        function deleteRecipe(button) {
+            const recipeDiv = button.parentNode;
+            recipeDiv.remove();
+        }
+
+        function editRecipe(button) {
+            const recipeDiv = button.parentNode;
+            const editDiv = recipeDiv.querySelector('.recipe-edit');
+            editDiv.classList.remove('hidden');
+            recipeDiv.querySelectorAll('p, img, h3, button:not(.recipe-edit button)').forEach(element => {
+                element.classList.add('hidden');
+            });
+        }
+
+        function saveRecipe(button) {
+            const editDiv = button.parentNode;
+            const recipeDiv = editDiv.parentNode;
+
+            const editNombre = editDiv.querySelector('.edit-nombre').value;
+            const editDuracion = editDiv.querySelector('.edit-duracion').value;
+            const editIngredientes = editDiv.querySelector('.edit-ingredientes').value;
+            const editPreparacion = editDiv.querySelector('.edit-preparacion').value;
+            const editImagen = editDiv.querySelector('.edit-imagen').files[0];
+
+            if (editNombre && editDuracion && editIngredientes && editPreparacion) {
+                recipeDiv.querySelector('h3').textContent = editNombre;
+                recipeDiv.querySelector('p strong:nth-of-type(1)').nextSibling.textContent = ` ${editDuracion}`;
+                recipeDiv.querySelector('p strong:nth-of-type(2)').nextSibling.textContent = ` ${editIngredientes}`;
+                recipeDiv.querySelector('p strong:nth-of-type(3)').nextSibling.textContent = ` ${editPreparacion}`;
+
+                if (editImagen) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        recipeDiv.querySelector('img').src = e.target.result;
+                    };
+                    reader.readAsDataURL(editImagen);
+                }
+
+                editDiv.classList.add('hidden');
+                recipeDiv.querySelectorAll('p, img, h3, button:not(.recipe-edit button)').forEach(element => {
+                    element.classList.remove('hidden');
+                });
+            } else {
+                alert('Por favor, completa todos los campos.');
+            }
+        }
+
+        function cancelEdit(button) {
+            const editDiv = button.parentNode;
+            const recipeDiv = editDiv.parentNode;
+
+            editDiv.classList.add('hidden');
+            recipeDiv.querySelectorAll('p, img, h3, button:not(.recipe-edit button)').forEach(element => {
+                element.classList.remove('hidden');
+            });
+        }
+    </script>
+</body>
+</html>
