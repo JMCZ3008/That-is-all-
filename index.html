@@ -84,36 +84,44 @@
     <section id="sobre-mi" class="hidden">
         <div class="card green">
             <h2>Sobre Mí</h2>
-            <p id="sobre-mi-content">Aquí puedes agregar una breve biografía o descripción sobre ti mismo. Incluye información sobre tus intereses, tu carrera y cualquier otra cosa que te gustaría compartir.</p>
+            <div id="sobre-mi-content">
+                <p>Aquí puedes agregar una breve biografía o descripción sobre ti mismo. Incluye información sobre tus intereses, tu carrera y cualquier otra cosa que te gustaría compartir.</p>
+            </div>
             <textarea id="sobre-mi-text" placeholder="Escribe tu descripción aquí..."></textarea><br>
-            <button onclick="updateContent('sobre-mi')">Actualizar</button>
+            <button onclick="addContent('sobre-mi')">Agregar</button>
         </div>
     </section>
 
     <section id="blog" class="hidden">
         <div class="card blue">
             <h2>Blog</h2>
-            <p id="blog-content">Aquí puedes compartir tus pensamientos y experiencias. Agrega tus artículos de blog con títulos, fechas y contenido.</p>
+            <div id="blog-content">
+                <p>Aquí puedes compartir tus pensamientos y experiencias. Agrega tus artículos de blog con títulos, fechas y contenido.</p>
+            </div>
             <textarea id="blog-text" placeholder="Escribe tu entrada de blog aquí..."></textarea><br>
-            <button onclick="updateContent('blog')">Actualizar</button>
+            <button onclick="addContent('blog')">Agregar</button>
         </div>
     </section>
 
     <section id="recetas" class="hidden">
         <div class="card green">
             <h2>Recetas</h2>
-            <p id="recetas-content">Comparte tus platillos y recetas favoritas. Puedes agregar imágenes y descripciones de cada platillo.</p>
+            <div id="recetas-content">
+                <p>Comparte tus platillos y recetas favoritas. Puedes agregar imágenes y descripciones de cada platillo.</p>
+            </div>
             <textarea id="recetas-text" placeholder="Escribe tu receta aquí..."></textarea><br>
-            <button onclick="updateContent('recetas')">Actualizar</button>
+            <button onclick="addContent('recetas')">Agregar</button>
         </div>
     </section>
 
     <section id="proyectos" class="hidden">
         <div class="card blue">
             <h2>Proyectos</h2>
-            <p id="proyectos-content">Describe tus proyectos y trabajos. Puedes agregar imágenes, descripciones y enlaces a tus proyectos.</p>
+            <div id="proyectos-content">
+                <p>Describe tus proyectos y trabajos. Puedes agregar imágenes, descripciones y enlaces a tus proyectos.</p>
+            </div>
             <textarea id="proyectos-text" placeholder="Escribe la descripción de tu proyecto aquí..."></textarea><br>
-            <button onclick="updateContent('proyectos')">Actualizar</button>
+            <button onclick="addContent('proyectos')">Agregar</button>
         </div>
     </section>
 
@@ -128,7 +136,7 @@
                 <li><a href="https://www.instagram.com" target="_blank">Instagram</a></li>
             </ul>
             <textarea id="contacto-text" placeholder="Añade otra red social aquí..."></textarea><br>
-            <button onclick="updateContent('contacto')">Actualizar</button>
+            <button onclick="addContent('contacto')">Agregar</button>
         </div>
     </section>
 
@@ -148,10 +156,12 @@
             });
         }
 
-        function updateContent(sectionId) {
+        function addContent(sectionId) {
             const contentElement = document.getElementById(`${sectionId}-content`);
             const textElement = document.getElementById(`${sectionId}-text`);
-            contentElement.innerHTML = textElement.value;
+            const newContent = document.createElement('p');
+            newContent.textContent = textElement.value;
+            contentElement.appendChild(newContent);
             textElement.value = '';
         }
     </script>
