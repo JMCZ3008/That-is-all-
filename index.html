@@ -100,6 +100,109 @@
             border-radius: 5px;
         }
     </style>
+    <!-- Incluyendo Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Configura Firebase con los datos de tu proyecto
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // Referencia a la base de datos
+        const database = firebase.database();
+
+        // Función para mostrar la sección correspondiente y ocultar las demás
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        }
+
+        // Función para agregar contenido a las secciones (excepto recetas)
+        function addContent(sectionId) {
+            const contentElement = document.getElementById(`${sectionId}-content`);
+            const textElement = document.getElementById(`${sectionId}-text`);
+            const newContent = document.createElement('p');
+            newContent.textContent = textElement.value;
+            contentElement.appendChild(newContent);
+            textElement.value = '';
+        }
+
+        // Función para agregar una receta
+        function addRecipe() {
+            const recetaNombre = document.getElementById('receta-nombre').value;
+            const recetaDuracion = document.getElementById('receta-duracion').value;
+            const recetaIngredientes = document.getElementById('receta-ingredientes').value;
+            const recetaPreparacion = document.getElementById('receta-preparacion').value;
+            const recetaImagen = document.getElementById('receta-imagen').files[0];
+
+            if (recetaNombre && recetaDuracion && recetaIngredientes && recetaPreparacion && recetaImagen) {
+                const recetaId = database.ref().child('recetas').push().key;
+
+                const receta = {
+                    id: recetaId,
+                    nombre: recetaNombre,
+                    duracion: recetaDuracion,
+                    ingredientes: recetaIngredientes,
+                    preparacion: recetaPreparacion,
+                    imagen: recetaImagen.name // Guardamos solo el nombre de la imagen
+                };
+
+                // Guardar receta en Firebase
+                database.ref('recetas/' + recetaId).set(receta);
+
+                // Limpiar el formulario
+                document.getElementById('receta-form').reset();
+            }
+        }
+
+        // Función para mostrar las recetas desde Firebase
+        function displayRecipes() {
+            const recetasContent = document.getElementById('recetas-content');
+            recetasContent.innerHTML = '';
+
+            database.ref('recetas').on('value', (snapshot) => {
+                const recetas = snapshot.val();
+                for (const id in recetas) {
+                    const receta = recetas[id];
+                    const recetaElement = document.createElement('div');
+                    recetaElement.classList.add('recipe');
+                    recetaElement.innerHTML = `
+                        <h3>${receta.nombre}</h3>
+                        <p><strong>Duración:</strong> ${receta.duracion}</p>
+                        <p><strong>Ingredientes:</strong> ${receta.ingredientes}</p>
+                        <p><strong>Preparación:</strong> ${receta.preparacion}</p>
+                        <img src="${receta.imagen}" alt="${receta.nombre}">
+                        <button onclick="deleteRecipe('${receta.id}')">Eliminar</button>
+                    `;
+                    recetasContent.appendChild(recetaElement);
+                }
+            });
+        }
+
+        // Función para eliminar una receta
+        function deleteRecipe(id) {
+            database.ref('recetas/' + id).remove();
+        }
+
+        // Cargar recetas al iniciar la página
+        window.onload = function() {
+            displayRecipes();
+        };
+    </script>
 </head>
 <body>
 
@@ -147,6 +250,7 @@
                 <input type="text" id="receta-nombre" placeholder="Nombre del platillo" required><br>
                 <input type="text" id="receta-duracion" placeholder="Duración (e.g., 30 minutos)" required><br>
                 <textarea id="receta-ingredientes" placeholder="Ingredientes" required></textarea><br>
+                <textarea id="receta-preparacion" placeholder
                 <textarea id="receta-preparacion" placeholder="Preparación" required></textarea><br>
                 <input type="file" id="receta-imagen" accept="image/*" required><br>
                 <button type="button" onclick="addRecipe()">Agregar Receta</button>
@@ -172,7 +276,7 @@
             <ul id="contacto-content">
                 <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
                 <li><a href="https://www.twitter.com" target="_blank">Twitter</a></li>
-                <li><a href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
+                <li><a href="6674082662" target="_blank">Celular</a></li>
                 <li><a href="https://www.instagram.com" target="_blank">Instagram</a></li>
             </ul>
             <textarea id="contacto-text" placeholder="Añade otra red social aquí..."></textarea><br>
@@ -205,105 +309,76 @@
             newContent.textContent = textElement.value;
             contentElement.appendChild(newContent);
             textElement.value = '';
-
-            // Guardar cambios en localStorage
-            saveToLocalStorage(sectionId, newContent.textContent);
-        }
-
-        // Función para guardar contenido en localStorage
-        function saveToLocalStorage(sectionId, content) {
-            let storedContent = JSON.parse(localStorage.getItem(sectionId)) || [];
-            storedContent.push(content);
-            localStorage.setItem(sectionId, JSON.stringify(storedContent));
-        }
-
-        // Función para cargar contenido desde localStorage al iniciar la página
-        function loadFromLocalStorage() {
-            const sections = ['sobre-mi', 'blog', 'proyectos', 'contacto'];
-            sections.forEach(sectionId => {
-                const contentElement = document.getElementById(`${sectionId}-content`);
-                const storedContent = JSON.parse(localStorage.getItem(sectionId)) || [];
-                storedContent.forEach(content => {
-                    const newContent = document.createElement('p');
-                    newContent.textContent = content;
-                    contentElement.appendChild(newContent);
-                });
-            });
-
-            // Cargar recetas
-            const recetasContent = document.getElementById('recetas-content');
-            const storedRecetas = JSON.parse(localStorage.getItem('recetas')) || [];
-            storedRecetas.forEach(receta => {
-                displayRecipe(receta);
-            });
         }
 
         // Función para agregar una receta
         function addRecipe() {
             const recetaNombre = document.getElementById('receta-nombre').value;
-                       const recetaDuracion = document.getElementById('receta-duracion').value;
+            const recetaDuracion = document.getElementById('receta-duracion').value;
             const recetaIngredientes = document.getElementById('receta-ingredientes').value;
             const recetaPreparacion = document.getElementById('receta-preparacion').value;
             const recetaImagen = document.getElementById('receta-imagen').files[0];
 
             if (recetaNombre && recetaDuracion && recetaIngredientes && recetaPreparacion && recetaImagen) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const receta = {
-                        nombre: recetaNombre,
-                        duracion: recetaDuracion,
-                        ingredientes: recetaIngredientes,
-                        preparacion: recetaPreparacion,
-                        imagen: event.target.result // Guardar la imagen como base64
-                    };
+                const recetaId = database.ref().child('recetas').push().key;
 
-                    // Obtener las recetas guardadas en localStorage o inicializar un array vacío
-                    let recetas = JSON.parse(localStorage.getItem('recetas')) || [];
-                    recetas.push(receta);
+                // Subir imagen a Firebase Storage
+                const storageRef = firebase.storage().ref();
+                const recetaImagenRef = storageRef.child('images/' + recetaImagen.name);
+                recetaImagenRef.put(recetaImagen).then(() => {
+                    recetaImagenRef.getDownloadURL().then((url) => {
+                        const receta = {
+                            id: recetaId,
+                            nombre: recetaNombre,
+                            duracion: recetaDuracion,
+                            ingredientes: recetaIngredientes,
+                            preparacion: recetaPreparacion,
+                            imagen: url // Guardamos la URL de la imagen
+                        };
 
-                    // Guardar el array actualizado en localStorage
-                    localStorage.setItem('recetas', JSON.stringify(recetas));
+                        // Guardar receta en Firebase
+                        database.ref('recetas/' + recetaId).set(receta);
 
-                    // Mostrar la receta en la página
-                    displayRecipe(receta);
-
-                    // Limpiar el formulario
-                    document.getElementById('receta-form').reset();
-                };
-                reader.readAsDataURL(recetaImagen);
+                        // Limpiar el formulario
+                        document.getElementById('receta-form').reset();
+                    });
+                });
             }
         }
 
-        // Función para mostrar una receta en la página
-        function displayRecipe(receta) {
+        // Función para mostrar las recetas desde Firebase
+        function displayRecipes() {
             const recetasContent = document.getElementById('recetas-content');
-            const recipeElement = document.createElement('div');
-            recipeElement.classList.add('recipe');
-            recipeElement.innerHTML = `
-                <h3>${receta.nombre}</h3>
-                <p><strong>Duración:</strong> ${receta.duracion}</p>
-                <p><strong>Ingredientes:</strong></p>
-                <p>${receta.ingredientes}</p>
-                <p><strong>Preparación:</strong></p>
-                <p>${receta.preparacion}</p>
-                <img src="${receta.imagen}" alt="${receta.nombre}">
-                <button onclick="deleteRecipe('${receta.nombre}')">Eliminar</button>
-            `;
-            recetasContent.appendChild(recipeElement);
+            recetasContent.innerHTML = '';
+
+            database.ref('recetas').on('value', (snapshot) => {
+                const recetas = snapshot.val();
+                for (const id in recetas) {
+                    const receta = recetas[id];
+                    const recetaElement = document.createElement('div');
+                    recetaElement.classList.add('recipe');
+                    recetaElement.innerHTML = `
+                        <h3>${receta.nombre}</h3>
+                        <p><strong>Duración:</strong> ${receta.duracion}</p>
+                        <p><strong>Ingredientes:</strong> ${receta.ingredientes}</p>
+                        <p><strong>Preparación:</strong> ${receta.preparacion}</p>
+                        <img src="${receta.imagen}" alt="${receta.nombre}">
+                        <button onclick="deleteRecipe('${receta.id}')">Eliminar</button>
+                    `;
+                    recetasContent.appendChild(recetaElement);
+                }
+            });
         }
 
         // Función para eliminar una receta
-        function deleteRecipe(nombre) {
-            let recetas = JSON.parse(localStorage.getItem('recetas')) || [];
-            recetas = recetas.filter(receta => receta.nombre !== nombre);
-            localStorage.setItem('recetas', JSON.stringify(recetas));
-
-            // Recargar la página para actualizar la lista de recetas
-            location.reload();
+        function deleteRecipe(id) {
+            database.ref('recetas/' + id).remove();
         }
 
-        // Cargar el contenido desde localStorage al cargar la página
-        window.onload = loadFromLocalStorage;
+        // Cargar recetas al iniciar la página
+        window.onload = function() {
+            displayRecipes();
+        };
     </script>
 </body>
 </html>
