@@ -91,6 +91,14 @@
             border-radius: 5px;
             margin: 10px 0;
         }
+        .recipe textarea,
+        .recipe input {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -218,7 +226,6 @@
                         <p><strong>Ingredientes:</strong> ${recetaIngredientes}</p>
                         <p><strong>Preparación:</strong> ${recetaPreparacion}</p>
                         <img src="${e.target.result}" alt="${recetaNombre}">
+                        <button onclick="editRecipe(this)">Editar</button>
                         <button onclick="deleteRecipe(this)">Eliminar</button>
-                    `;
-
-                    recetaContent.appendChild(newRecipe);
+                        <div class="
